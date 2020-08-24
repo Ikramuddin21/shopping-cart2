@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <title>Shopping Cart</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" rel="stylesheet" />
+   <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+
+   <section>
+      <div class="container">
+         <div id="cart-area" class="cart">
+            <div class="col-md-12 col-lg-10 mx-auto">
+               <div id="mobile-area" class="cart-item">
+                  <div class="row">
+                     <div class="col-md-7 center-item">
+                        <img src="images/product-1.png" alt="">
+                        <h5>iPhone 11 128GB Black</h5>
+                     </div>
+
+                     <div class="col-md-5 center-item">
+                        <div class="input-group number-spinner">
+                           <button id="mobileMinusBtn" class="btn btn-default"><i class="fas fa-minus"></i></button>
+                           <input  id="mobileCount" type="text" class="form-control text-center" value="1">
+                           <button id="mobilePlusBtn" class="btn btn-default"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <h5>$ <span id="mobilePrice">1219</span></h5>
+                        <img id="removeMobile" src="images/remove.png" alt="" class="remove-item">
+                     </div>
+                  </div>
+               </div>
+
+               <div id="case-area" class="cart-item">
+                  <div class="row">
+                     <div class="col-md-7 center-item mx-auto">
+                        <img src="images/product-2.png" alt="">
+                        <h5>iPhone 11 Silicone Case - Black</h5>
+                     </div>
+                     <div class="col-md-5 center-item">
+                        <div class="input-group number-spinner">
+                           <button id="caseMinusBtn" class="btn btn-default"><i class="fas fa-minus"></i></button>
+                           <input id="caseCount" type="text" class="form-control text-center" value="1">
+                           <button id="casePlusBtn" class="btn btn-default"><i class="fas fa-plus"></i></button>
+
+                        </div>
+                        <h5>$ <span id="casePrice">59</span></h5>
+                        <img id="removeCase" src="images/remove.png" alt="" class="remove-item">
+                     </div>
+                  </div>
+               </div>
+
+               <div class="cart-item">
+                  <div class="row">
+
+                     <div class="col-md-8">
+                        <h5>Subtotal: </h5>
+                        <h5>Tax:</h5>
+                        <h5>Total:</h5>
+                     </div>
+
+                     <div class="col-md-4 status">
+                        <h5>$ <span id="subtotalPrice">1278</span></h5>
+                        <h5>$0</h5>
+                        <h5>$ <span id="totalPrice">1278</span></h5>
+                     </div>
+                  </div>
+               </div>
+               <div class="col-md-12 pt-4 pb-4">
+                  <button id="checkOutBtn" type="button" class="btn btn-success check-out">Check Out</button>
+               </div>
+            </div>
+         </div>
+
+         <div id="check-area">
+            <h1>Thank you</h1>
+            <img src="images/thank-you.gif" alt="">
+         </div>
+      </div>
+   </section>
+   <script>
+      // mobile plus button event handler
+      const mobilePlusBtn = document.getElementById("mobilePlusBtn");
+      mobilePlusBtn.addEventListener("click", function(){
+
+         const mobileCount = getInputNumber("mobileCount");
+         const mobileCountIncrement = mobileCount + 1;
+         document.getElementById("mobileCount").value = mobileCountIncrement;
+
+         getMobilePrice("mobilePrice", mobileCountIncrement);
+         //subtotal price
+         mobileTotalPriceIncrement("subtotalPrice");
+         // total price
+         mobileTotalPriceIncrement("totalPrice");
+      })
+
+      // mobile minus button event handler
+      const mobileMinusBtn = document.getElementById("mobileMinusBtn");
+      mobileMinusBtn.addEventListener("click", function(){
+
+         const mobileCount = getInputNumber("mobileCount");
+         const mobileCountDecrement = mobileCount - 1;
+         if (mobileCountDecrement >= 0) {
+            document.getElementById("mobileCount").value = mobileCountDecrement;
+
+            getMobilePrice("mobilePrice", mobileCountDecrement);
+            // subtotal price
+            mobileTotalPriceDecrement("subtotalPrice");
+            // total price
+            mobileTotalPriceDecrement("totalPrice");
+         }
+
+      })
+
+      // case plus button event handler
+      const casePlusBtn = document.getElementById("casePlusBtn");
+      casePlusBtn.addEventListener("click", function(){
+
+         const caseCount = getInputNumber("caseCount");
+         const caseCountIncrement = caseCount + 1;
+         document.getElementById("caseCount").value = caseCountIncrement;
+
+         getCasePrice("casePrice", caseCountIncrement);
+         // subtotal price
+         caseTotalPriceIncrement("subtotalPrice");
+         // total price
+         caseTotalPriceIncrement("totalPrice");
+
+      })
+
+      // case minus button event handler
+      const caseMinusBtn = document.getElementById("caseMinusBtn");
+      caseMinusBtn.addEventListener("click", function(){
+
+         const caseCount = getInputNumber("caseCount");
+         const caseCountDecrement = caseCount - 1;
+         if (caseCountDecrement >= 0) {
+            document.getElementById("caseCount").value = caseCountDecrement;
+
+            getCasePrice("casePrice", caseCountDecrement);
+            // subtotal price
+            caseTotalPriceDecrement("subtotalPrice");
+            // total price
+            caseTotalPriceDecrement("totalPrice");
+         }
+
+      })
+
+      // remove mobile area
+      removeItem("removeMobile", "mobile-area");
+      // remove case area
+      removeItem("removeCase", "case-area");
+
+      // check out button event handler
+      const checkOutBtn = document.getElementById("checkOutBtn");
+         checkOutBtn.addEventListener("click", function(){
+            const cartArea = document.getElementById("cart-area");
+            cartArea.style.display = "none";
+            const checkArea = document.getElementById("check-area");
+            checkArea.style.display = "block";
+         })
+      
+
+      // input number
+      function getInputNumber(id){
+         const count = document.getElementById(id).value;
+         const countNumber = parseInt(count);
+         return countNumber;
+      }
+
+      // mobile price
+      function getMobilePrice(id, mobileCount){
+         const mobilePrice = document.getElementById(id).innerText;
+         const mobilePriceNumber = parseFloat(mobilePrice);
+         const mobilePriceVary = mobileCount * 1219;
+         document.getElementById(id).innerText = mobilePriceVary;
+      }
+
+      // case price
+      function getCasePrice(id, caseCount){
+         const casePrice = document.getElementById(id).innerText;
+         const casePriceNumber = parseFloat(casePrice);
+         const casePriceVary = caseCount * 59;
+         document.getElementById(id).innerText = casePriceVary;
+      }
+      
+      // mobile total price incerment
+      function mobileTotalPriceIncrement(id){
+         const totalPrice = document.getElementById(id).innerText;
+         const totalNumber = parseFloat(totalPrice);
+         const newtotalPrice = totalNumber + 1219;
+         document.getElementById(id).innerText = newtotalPrice;
+      }
+
+      // mobile total price decrement
+      function mobileTotalPriceDecrement(id){
+         const totalPrice = document.getElementById(id).innerText;
+         const totalNumber = parseFloat(totalPrice);
+         const newtotalPrice = totalNumber - 1219;
+         document.getElementById(id).innerText = newtotalPrice;
+      }
+
+      // case total price increment
+      function caseTotalPriceIncrement(id){
+         const totalPrice = document.getElementById(id).innerText;
+         const totalNumber = parseFloat(totalPrice);
+         const newtotalPrice = totalNumber + 59;
+         document.getElementById(id).innerText = newtotalPrice;
+      }
+
+      // case total price decrement
+      function caseTotalPriceDecrement(id){
+         const totalPrice = document.getElementById(id).innerText;
+         const totalNumber = parseFloat(totalPrice);
+         const newtotalPrice = totalNumber - 59;
+         document.getElementById(id).innerText = newtotalPrice;
+      }
+
+      // remove item
+      function removeItem(id1, id2){
+         const removeEvent = document.getElementById(id1);
+         removeEvent.addEventListener("click", function(){
+            const removeArea = document.getElementById(id2);
+            removeArea.style.display = "none";
+         })
+      }
+   </script>
+</body>
+
+</html>
